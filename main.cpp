@@ -4,7 +4,7 @@
 #include <vector>
 #include <fstream>
 #include <iomanip>
- using namespace std;
+using namespace std;
 
 
  // funkcija lai izprintētu 2d vektoru
@@ -31,14 +31,15 @@ bool isFloat( string myString ) {
 */
 
 //  funkcija ielasa failu un to pārkopē uz 2d vektoru kā double tipu
-void readFile(char* filename, vector< vector<double> > &twodvector)
+void readFile(string filename, vector< vector<double> > &twodvector)
 {
     ifstream myfile(filename, ios::in);
     string line;
     string field;
     vector<double> v;                // info par vienu reklāmu (viena faila rinda)
     double result;
-    if(myfile.is_open()) {
+    if(myfile.is_open())
+        {
     while ( getline(myfile,line) )    // getline nākamajai faila rindai
     {
         v.clear();
@@ -47,8 +48,8 @@ void readFile(char* filename, vector< vector<double> > &twodvector)
         while (getline(ss,field,','))  // komats atdala 'field' elementus
         {
             istringstream convert(field);
-            if ( !(convert >> result) )     // konvertē field vērtību string uz double
-                result = 0;
+            if ( !(convert >> result) )  result = 0;   // konvertē field vērtību string uz double
+
             v.push_back(result);  // double vērtības pievieno 1D vektoram
 
         }
@@ -56,9 +57,11 @@ void readFile(char* filename, vector< vector<double> > &twodvector)
         twodvector.push_back(v);  // 1D vektoru pievieno 2D vektoram
     }
 
-        }else {
-    cout  << "Fails netika korekti ielādēts";
-    }
+        }
+        else
+        {
+            cout  << "Fails netika korekti ielādēts";
+        }
 myfile.close();
 
 }
@@ -75,7 +78,7 @@ int biggestScoreSlot(vector< vector<double> > &adsvector, vector < vector<double
         slotscore = 0;
         double timeleft = slotsvector[i][2] - adsvector[adrow][1] ;
         if(timeleft >= -10) // ja pievienojot reklāmu šajā slota rindā, tad jāpārbauda - vai slota garums nepārsniegs 10 sekundes
-            {
+             {
             for(size_t j = 2; j < slotsvector[i].size(); j++) // iterē caur slotvector trp kolonnām
                 {
 
@@ -91,19 +94,21 @@ int biggestScoreSlot(vector< vector<double> > &adsvector, vector < vector<double
                         biggestScore = slotscore;
                         id = slotsvector[i][0];
                     }
-
-        } else {
+            }
+         else
+            {
             continue;
+            }
         }
- }
 
-if(biggestScore != 0)
-    {
-    return id;
-    }
-else {
-    return -1; // gadījumā, ja nav palikusi neviena reklāma ar trp ,kas interesē
-    }
+    if(biggestScore != 0)
+        {
+        return id;
+        }
+    else
+        {
+        return -1; // gadījumā, ja nav palikusi neviena reklāma ar trp ,kas interesē
+        }
 }
 
 
@@ -139,11 +144,12 @@ void subtracttrp(vector< vector<double> > &adsvector, vector< vector<double> > &
     {
         slotRow++;
     }
-        for(size_t i = 1;i < slotsvector[slotRow].size(); ++i)
-        {
+
+    for(size_t i = 1;i < slotsvector[slotRow].size(); ++i)
+    {
             adsvector[adRow][i+1] -= slotsvector[slotRow][i+2]; // atņēm no adsvektora trp vērtībām slotsvektora trp vērtības
             slotsvector[slotRow][i+1] -= v[i];  // atņem no slotsvector trp vērtībām 'v' trp vērtības
-        }
+    }
 }
 
 
@@ -191,14 +197,12 @@ void fillSlots(vector< vector<double> > &adsvector, vector< vector<double> > &sl
             clearArrayValues(trpArr);
             continue;
         }
-          else      // iterē uz nākamo rindu tikai tad, kad apmierinātas visas esošās rindas reklāmas trp vērtības
-          {
+        else      // iterē uz nākamo rindu tikai tad, kad apmierinātas visas esošās rindas reklāmas trp vērtības
+            {
                 ++i;
+            }
     }
-          }
-
-
-    }
+}
 
 
 
@@ -215,7 +219,7 @@ int main()
 
 
     fillSlots(ads, slots);
-    cout << "DONE";
+    cout << "DONE" << endl;
 
 return 0;
 }
