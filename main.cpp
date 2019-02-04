@@ -8,7 +8,7 @@ using namespace std;
 
 
  // funkcija lai izprintētu 2d vektoru
-void printVector(vector< vector <double> > v)
+void printVector(vector< vector <float> > v)
 {
  for (size_t i=0; i<v.size(); ++i)
     {
@@ -30,14 +30,14 @@ bool isFloat( string myString ) {
 }
 */
 
-//  funkcija ielasa failu un to pārkopē uz 2d vektoru kā double tipu
-void readFile(string filename, vector< vector<double> > &twodvector)
+//  funkcija ielasa failu un to pārkopē uz 2d vektoru kā float tipu
+void readFile(string filename, vector< vector<float> > &twodvector)
 {
     ifstream myfile(filename, ios::in);
     string line;
     string field;
-    vector<double> v;                // info par vienu reklāmu (viena faila rinda)
-    double result;
+    vector<float> v;                // info par vienu reklāmu (viena faila rinda)
+    float result;
     if(myfile.is_open())
         {
     while ( getline(myfile,line) )    // getline nākamajai faila rindai
@@ -48,9 +48,9 @@ void readFile(string filename, vector< vector<double> > &twodvector)
         while (getline(ss,field,','))  // komats atdala 'field' elementus
         {
             istringstream convert(field);
-            if ( !(convert >> result) )  result = 0;   // konvertē field vērtību string uz double
+            if ( !(convert >> result) )  result = 0;   // konvertē field vērtību string uz float
 
-            v.push_back(result);  // double vērtības pievieno 1D vektoram
+            v.push_back(result);  // float vērtības pievieno 1D vektoram
 
         }
 
@@ -68,15 +68,15 @@ myfile.close();
 
 
 // funkcija biggestScoreSlot atrod slotu, kuram ir lielākais attiecīgo reklāmas trp vērtību score
-int biggestScoreSlot(vector< vector<double> > &adsvector, vector < vector<double> > &slotsvector, double trpArr[11], int adrow)
+int biggestScoreSlot(vector< vector<float> > &adsvector, vector < vector<float> > &slotsvector, float trpArr[11], int adrow)
 {
- double slotscore;
- double biggestScore = 0;
+ float slotscore;
+ float biggestScore = 0;
  int id = 0;
     for(size_t i = 0; i < slotsvector.size(); ++i)  // iterē caur slotvector rindām
         {
         slotscore = 0;
-        double timeleft = slotsvector[i][2] - adsvector[adrow][1] ;
+        float timeleft = slotsvector[i][2] - adsvector[adrow][1] ;
         if(timeleft >= -10) // ja pievienojot reklāmu šajā slota rindā, tad jāpārbauda - vai slota garums nepārsniegs 10 sekundes
              {
             for(size_t j = 2; j < slotsvector[i].size(); j++) // iterē caur slotvector trp kolonnām
@@ -129,10 +129,10 @@ void outPutFile(int slotId, int adId)
 
 
 // funkcija paredzēta, lai pēc reklāmas ievietošānas tai piemērotā slotā, atņemtu trp vērtības, kā arī slotam atņem reklāmas laiku
-void subtracttrp(vector< vector<double> > &adsvector, vector< vector<double> > &slotsvector, int adRow, int slotId)
+void subtracttrp(vector< vector<float> > &adsvector, vector< vector<float> > &slotsvector, int adRow, int slotId)
 {
     int slotRow = 0;
-    vector<double> v = {0,0,0,0,0,0,0,0,0,0,0}; // īslaicīgais vektors, kurā saglabā adsvector vērtības, lai no adsvector var atņemt slotsvector vērtības UN otrādi
+    vector<float> v = {0,0,0,0,0,0,0,0,0,0,0}; // īslaicīgais vektors, kurā saglabā adsvector vērtības, lai no adsvector var atņemt slotsvector vērtības UN otrādi
 
 
     for(size_t i = 0;i < adsvector[adRow].size(); ++i)
@@ -145,18 +145,19 @@ void subtracttrp(vector< vector<double> > &adsvector, vector< vector<double> > &
         slotRow++;
     }
 
-    for(size_t i = 1;i < slotsvector[slotRow].size(); ++i)
+    for(size_t i = 2;i < slotsvector[slotRow].size(); ++i)
     {
-            adsvector[adRow][i+1] -= slotsvector[slotRow][i+2]; // atņēm no adsvektora trp vērtībām slotsvektora trp vērtības
-            slotsvector[slotRow][i+1] -= v[i];  // atņem no slotsvector trp vērtībām 'v' trp vērtības
+            adsvector[adRow][i] -= slotsvector[slotRow][i+1]; // atņēm no adsvektora trp vērtībām slotsvektora trp vērtības
+            slotsvector[slotRow][i] -= v[i-1];  // atņem no slotsvector trp vērtībām 'v' trp vērtības
     }
+   return;
 }
 
 
 // visas masīva vērtības nomaina uz 0
-void clearArrayValues(double arr[])
+void clearArrayValues(float arr[])
 {
-    for(int i = 0;i < 11; ++i)
+    for(int i = 2;i < 11; ++i)
     {
         arr[i] = 0;
     }
@@ -164,17 +165,22 @@ void clearArrayValues(double arr[])
 
 
 // funkcija, kas sakārto reklāmas ar tām vispiemērotākajiem slotiem
-void fillSlots(vector< vector<double> > &adsvector, vector< vector<double> > &slotsvector)
+void fillSlots(vector< vector<float> > &adsvector, vector< vector<float> > &slotsvector)
 {                // n n 0 1 2 3 4 5 6 7 grp
- double trpArr[] = {0,0,0,0,0,0,0,0,0,0,0};   // masīvs, kurā īslaicīgi saglabā 'ads' trp vērtības size 11
+ float trpArr[] = {0,0,0,0,0,0,0,0,0,0,0};   // masīvs, kurā īslaicīgi saglabā 'ads' trp vērtības size 11
  int slotId = 0;    // slotId paredzēts, lai saglabātu 'slotvector' id vērtību
  int adId;  // adId paredzēts, lai saglabātu 'advector' id vērtību
- double adsscore;
+ float adsscore;
 
  size_t i = 0;
  while(i < adsvector.size())
     {
     adsscore = 0;
+   //if(adsvector[i][1] <= 0) // ja reklāma jau ir parādīta
+  // {
+      //  i++;
+
+    //}
         for(size_t j = 2; j < adsvector[i].size(); j++) // iterē caur 'adsvector' kolonnām, kur it trp vērtības
         {
 
@@ -184,16 +190,28 @@ void fillSlots(vector< vector<double> > &adsvector, vector< vector<double> > &sl
                 adsscore += adsvector[i][j];
             }
         }
+        cout << "trpArr:" << endl;
+        for(int m=0;m<11;m++){
+        cout<<trpArr[m] << endl;
+        }
+        cout << "adsccore " << adsscore << endl;
+
         if(adsscore > 0)    // ja reklāmai ir trp vērtības, kas lielākas par 0 , tad šai reklāmai ir jāpievieno slots
          {
             slotId = biggestScoreSlot(adsvector, slotsvector, trpArr, i);
+            cout << "SLOTID: " << slotId << endl;
             if(slotId != -1)
             {
                 adId = adsvector[i][0];
                 outPutFile(slotId, adId);
                 int adRow = i;
                 subtracttrp(adsvector,slotsvector, adRow, slotId);
+
             }
+            else // ja nav piemērota slota
+             {
+               i++;
+             }
             clearArrayValues(trpArr);
             continue;
         }
@@ -208,12 +226,12 @@ void fillSlots(vector< vector<double> > &adsvector, vector< vector<double> > &sl
 
 int main()
 {
-   vector< vector<double> > slots;
+   vector< vector<float> > slots;
     readFile("slots.txt", slots);   // ielādē faila 'slots.txt saturu 2d vektorā 'slots'
     printVector(slots);
 
 
-    vector< vector<double> > ads;
+    vector< vector<float> > ads;
     readFile("ads.txt", ads);   // ielādē faila 'ads.txt' saturu 2d vektorā 'slots'
     printVector(ads);
 
